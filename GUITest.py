@@ -1,4 +1,6 @@
 import sys
+import pandas as pd
+import sqlite3
 
 from PyQt5.QtWidgets import (
     QApplication, QDialog, QMainWindow, QMessageBox,
@@ -9,20 +11,28 @@ from PyQt5.uic import loadUi
 import MainMenu_ui
 import MatchWindow_ui
 import AddWindow_ui
-
+import PredictionModel
 
 class Main(QDialog, MainMenu_ui.Ui_Dialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
         self.connectSignalsSlots()
-        self.SeasonComboBox.addItem("2020/2021")
-        self.tableWidget.setColumnCount(3)
-        self.tableWidget.setRowCount(20)
-        for x in range(20):
-            self.tableWidget.setItem(x, 0, QTableWidgetItem("Home"))  # Nazwa Gospodarza
-            self.tableWidget.setItem(x, 1, QTableWidgetItem("Away"))  # Nazwa Gościa
-            self.tableWidget.setItem(x, 2, QTableWidgetItem("Winner"))  # Ktora druzyna wygrala
+        self.conn = sqlite3.connect('premier_league.db')
+        self.PM = PredictionModel.PredictionModel()
+
+        sql_query = pd.read_sql_query(
+            "select * from Historical_matches", self.conn)
+        df = pd.DataFrame(sql_query,columns=['season'])
+        seasons = df.season.unique().tolist()
+
+        seasons.append('2020/21')
+        seasons.remove('1995/96')
+        seasons.remove('1996/97')
+        seasons.remove('1997/98')
+        for x in seasons:
+            self.SeasonComboBox.addItem(x)
+
 
     def connectSignalsSlots(self):
         self.MatchButton.clicked.connect(self.openMatchWindow)
@@ -43,6 +53,14 @@ class Main(QDialog, MainMenu_ui.Ui_Dialog):
     def generateSeason(self):
         # tu wygenerowanie wynikow sezonu
         print()
+        temp,_ = self.PM.predict_season(int(self.SeasonComboBox.currentText()[:-3]))
+        self.tableWidget.setColumnCount(3)
+        self.tableWidget.setRowCount(temp.shape[0])
+
+        for n, x in enumerate(temp.iterrows()):
+            self.tableWidget.setItem(n, 0, QTableWidgetItem(x[1][0]))  # Nazwa Gospodarza
+            self.tableWidget.setItem(n, 1, QTableWidgetItem(x[1][1]))  # Nazwa Gościa
+            self.tableWidget.setItem(n, 2, QTableWidgetItem(x[1][2]))  # Ktora druzyna wygrala
 
 
 class Match(QDialog, MatchWindow_ui.Ui_Dialog):
