@@ -99,8 +99,6 @@ class PredictionModel:
         return df
 
     def predict_season(self, season: int):
-        if season > 2020 or season < 1998:
-            return 0
 
         sql_query = pd.read_sql_query(
             "select * from Historical_matches", self.conn)
@@ -164,7 +162,7 @@ class PredictionModel:
         t = matches[['home_team', 'winner']][matches['winner'] == 'H'].groupby('home_team').count()
         t2 = matches[['away_team', 'winner']][matches['winner'] == 'A'].groupby('away_team').count()
         t2 = t2.rename({'away_team': 'home_team'})
-        t = t.join(t2, rsuffix="a", on=['home_team']).fillna(0)
+        t = t.join(t2, how='outer', rsuffix="a", on=['home_team']).fillna(0)
         t['winner'] += t['winnera']
         t = t.rename(columns={'winner': 'wins'}).drop(columns=['winnera'])
         table = table.join(t, on=['home_team']).fillna(0)
@@ -172,7 +170,7 @@ class PredictionModel:
         t = matches[['home_team', 'winner']][matches['winner'] == 'A'].groupby('home_team').count()
         t2 = matches[['away_team', 'winner']][matches['winner'] == 'H'].groupby('away_team').count()
         t2 = t2.rename({'away_team': 'home_team'})
-        t = t.join(t2, rsuffix="a", on=['home_team']).fillna(0)
+        t = t.join(t2, how='outer', rsuffix="a", on=['home_team']).fillna(0)
         t['winner'] += t['winnera']
         t = t.drop(columns=['winnera']).rename(columns={'winner': 'loses'})
         table = table.join(t, on=['home_team']).fillna(0)
@@ -180,9 +178,9 @@ class PredictionModel:
         t = matches[['home_team', 'winner']][matches['winner'] == 'D'].groupby('home_team').count()
         t2 = matches[['away_team', 'winner']][matches['winner'] == 'D'].groupby('away_team').count()
         t2 = t2.rename({'away_team': 'home_team'})
-        t = t.join(t2, rsuffix="a", on=['home_team']).fillna(0)
+        t = t.join(t2, how='outer', rsuffix="a", on=['home_team']).fillna(0)
         t['winner'] += t['winnera']
         t = t.drop(columns=['winnera']).rename(columns={'winner': 'draws'})
         table = table.join(t, on=['home_team']).fillna(0)
-        
+
         return matches, table
