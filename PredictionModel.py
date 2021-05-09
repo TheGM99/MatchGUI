@@ -61,15 +61,14 @@ class PredictionModel:
         x = df.drop(columns=['result', 'A', 'D', 'H']).to_numpy()
         y = df[['A', 'H', 'D']].to_numpy()
 
-        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
 
         network = models.Sequential()
-        network.add(layers.Dense(128, activation='relu', input_shape=(x_train.shape[1],)))
+        network.add(layers.Dense(128, activation='relu', input_shape=(x.shape[1],)))
         network.add(layers.Dense(32, activation='relu'))
         network.add(layers.Dense(3, activation='softmax'))
         network.compile(optimizer='adam', loss="categorical_crossentropy", metrics=['acc'])
 
-        network.fit(x_train, y_train, epochs=90, batch_size=128, validation_split=0.2)
+        network.fit(x, y, epochs=90, batch_size=128, validation_split=0.2)
         network.save('model.h5')
         return network
 
@@ -162,4 +161,28 @@ class PredictionModel:
         table['points'] += matches[['away_team', 'a_points']].groupby(['away_team']).sum()['a_points']
         table = table.sort_values(by='points', ascending=False)
 
+        t = matches[['home_team', 'winner']][matches['winner'] == 'H'].groupby('home_team').count()
+        t2 = matches[['away_team', 'winner']][matches['winner'] == 'A'].groupby('away_team').count()
+        t2 = t2.rename({'away_team': 'home_team'})
+        t = t.join(t2, rsuffix="a", on=['home_team']).fillna(0)
+        t['winner'] += t['winnera']
+        t = t.rename(columns={'winner': 'wins'}).drop(columns=['winnera'])
+        table = table.join(t, on=['home_team']).fillna(0)
+
+        t = matches[['home_team', 'winner']][matches['winner'] == 'A'].groupby('home_team').count()
+        t2 = matches[['away_team', 'winner']][matches['winner'] == 'H'].groupby('away_team').count()
+        t2 = t2.rename({'away_team': 'home_team'})
+        t = t.join(t2, rsuffix="a", on=['home_team']).fillna(0)
+        t['winner'] += t['winnera']
+        t = t.drop(columns=['winnera']).rename(columns={'winner': 'loses'})
+        table = table.join(t, on=['home_team']).fillna(0)
+
+        t = matches[['home_team', 'winner']][matches['winner'] == 'D'].groupby('home_team').count()
+        t2 = matches[['away_team', 'winner']][matches['winner'] == 'D'].groupby('away_team').count()
+        t2 = t2.rename({'away_team': 'home_team'})
+        t = t.join(t2, rsuffix="a", on=['home_team']).fillna(0)
+        t['winner'] += t['winnera']
+        t = t.drop(columns=['winnera']).rename(columns={'winner': 'draws'})
+        table = table.join(t, on=['home_team']).fillna(0)
+        
         return matches, table
