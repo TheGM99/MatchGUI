@@ -13,6 +13,7 @@ import MatchWindow_ui
 import AddWindow_ui
 import PredictionModel
 
+
 class Main(QDialog, MainMenu_ui.Ui_Dialog):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -23,7 +24,7 @@ class Main(QDialog, MainMenu_ui.Ui_Dialog):
 
         sql_query = pd.read_sql_query(
             "select * from Historical_matches", self.conn)
-        df = pd.DataFrame(sql_query,columns=['season'])
+        df = pd.DataFrame(sql_query, columns=['season'])
         seasons = df.season.unique().tolist()
 
         seasons.append('2020/21')
@@ -32,7 +33,6 @@ class Main(QDialog, MainMenu_ui.Ui_Dialog):
         seasons.remove('1997/98')
         for x in seasons:
             self.SeasonComboBox.addItem(x)
-
 
     def connectSignalsSlots(self):
         self.MatchButton.clicked.connect(self.openMatchWindow)
@@ -52,15 +52,28 @@ class Main(QDialog, MainMenu_ui.Ui_Dialog):
 
     def generateSeason(self):
         # tu wygenerowanie wynikow sezonu
-        print()
-        temp,_ = self.PM.predict_season(int(self.SeasonComboBox.currentText()[:-3]))
-        self.tableWidget.setColumnCount(3)
-        self.tableWidget.setRowCount(temp.shape[0])
+        temp, temp2 = self.PM.predict_season(int(self.SeasonComboBox.currentText()[:-3]))
+        if (self.viewButton.isChecked()):
+            self.tableWidget.setColumnCount(3)
+            self.tableWidget.setRowCount(temp.shape[0])
+            self.tableWidget.setHorizontalHeaderLabels(["Gospodarz", "Gość", "Wynik"])
 
-        for n, x in enumerate(temp.iterrows()):
-            self.tableWidget.setItem(n, 0, QTableWidgetItem(x[1][0]))  # Nazwa Gospodarza
-            self.tableWidget.setItem(n, 1, QTableWidgetItem(x[1][1]))  # Nazwa Gościa
-            self.tableWidget.setItem(n, 2, QTableWidgetItem(x[1][2]))  # Ktora druzyna wygrala
+            for n, x in enumerate(temp.iterrows()):
+                self.tableWidget.setItem(n, 0, QTableWidgetItem(x[1][0]))  # Nazwa Gospodarza
+                self.tableWidget.setItem(n, 1, QTableWidgetItem(x[1][1]))  # Nazwa Gościa
+                self.tableWidget.setItem(n, 2, QTableWidgetItem(x[1][2]))  # Ktora druzyna wygrala
+        else:
+            self.tableWidget.setColumnCount(5)
+            self.tableWidget.setRowCount(temp2.shape[0])
+            self.tableWidget.setHorizontalHeaderLabels(
+                ["Drużyna", "Wygrane", "Remisy", "Przegrane", "Punkty"])
+
+            for n, x in enumerate(temp2.iterrows()):
+                self.tableWidget.setItem(n, 0, QTableWidgetItem(x[0]))  # Nazwa Drużyny
+                self.tableWidget.setItem(n, 1, QTableWidgetItem(str(int(x[1][1]))))  # Ilość wygranych meczy
+                self.tableWidget.setItem(n, 2, QTableWidgetItem(str(int(x[1][3]))))  # Ilość zremisowanych meczy
+                self.tableWidget.setItem(n, 3, QTableWidgetItem(str(int(x[1][2]))))  # Ilość przegranych meczy
+                self.tableWidget.setItem(n, 4, QTableWidgetItem(str(int(x[1][0]))))  # Ilość zdobytych punktów
 
 
 class Match(QDialog, MatchWindow_ui.Ui_Dialog):
@@ -83,7 +96,6 @@ class Match(QDialog, MatchWindow_ui.Ui_Dialog):
 
     def on_backButton_clicked(self):
         self.close()
-
 
 
 class Add(QDialog, AddWindow_ui.Ui_AddWindow):
