@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 
-from sklearn.model_selection import train_test_split
+
 from tensorflow.keras import models, layers
 
 
@@ -95,6 +95,7 @@ class PredictionModel:
             df = df.merge(result_by_year, how='left', suffixes=[None, f"_same_team_h{i}"],
                           on=['season', 'home_team', 'away_team'])
             df = df.rename(columns={'resultNone': 'result'}).fillna(0)
+
         df = df.drop(columns=['next_season', 'a_points']).fillna(0)
         return df
 
@@ -142,7 +143,9 @@ class PredictionModel:
 
         results = []
         for i in range(predictions.shape[0]):
+
             prediction = np.where(predictions[i] == np.max(predictions[i]))
+
 
             if prediction[0] == 0:
                 results.append('A')
@@ -161,26 +164,34 @@ class PredictionModel:
 
         t = matches[['home_team', 'winner']][matches['winner'] == 'H'].groupby('home_team').count()
         t2 = matches[['away_team', 'winner']][matches['winner'] == 'A'].groupby('away_team').count()
-        t2 = t2.rename({'away_team': 'home_team'})
-        t = t.join(t2, how='outer', rsuffix="a", on=['home_team']).fillna(0)
-        t['winner'] += t['winnera']
-        t = t.rename(columns={'winner': 'wins'}).drop(columns=['winnera'])
-        table = table.join(t, on=['home_team']).fillna(0)
+
+        t2 = t2.reset_index()
+        t2 = t2.rename(columns={'away_team': 'home_team'})
+        t = t.merge(t2, how='outer', on=['home_team']).fillna(0)
+        t['winner_x'] += t['winner_y']
+        t = t.rename(columns={'winner_x': 'wins'}).drop(columns=['winner_y'])
+        table = table.merge(t, how='outer', on=['home_team']).fillna(0)
+
 
         t = matches[['home_team', 'winner']][matches['winner'] == 'A'].groupby('home_team').count()
         t2 = matches[['away_team', 'winner']][matches['winner'] == 'H'].groupby('away_team').count()
-        t2 = t2.rename({'away_team': 'home_team'})
-        t = t.join(t2, how='outer', rsuffix="a", on=['home_team']).fillna(0)
-        t['winner'] += t['winnera']
-        t = t.drop(columns=['winnera']).rename(columns={'winner': 'loses'})
-        table = table.join(t, on=['home_team']).fillna(0)
+
+        t2 = t2.reset_index()
+        t2 = t2.rename(columns={'away_team': 'home_team'})
+        t = t.merge(t2, how='outer', on=['home_team']).fillna(0)
+        t['winner_x'] += t['winner_y']
+        t = t.rename(columns={'winner_x': 'loses'}).drop(columns=['winner_y'])
+        table = table.merge(t, how='outer', on=['home_team']).fillna(0)
+
 
         t = matches[['home_team', 'winner']][matches['winner'] == 'D'].groupby('home_team').count()
         t2 = matches[['away_team', 'winner']][matches['winner'] == 'D'].groupby('away_team').count()
-        t2 = t2.rename({'away_team': 'home_team'})
-        t = t.join(t2, how='outer', rsuffix="a", on=['home_team']).fillna(0)
-        t['winner'] += t['winnera']
-        t = t.drop(columns=['winnera']).rename(columns={'winner': 'draws'})
-        table = table.join(t, on=['home_team']).fillna(0)
+
+        t2 = t2.reset_index()
+        t2 = t2.rename(columns={'away_team': 'home_team'})
+        t = t.merge(t2, how='outer', on=['home_team']).fillna(0)
+        t['winner_x'] += t['winner_y']
+        t = t.rename(columns={'winner_x': 'draws'}).drop(columns=['winner_y'])
+        table = table.merge(t, how='outer', on=['home_team']).fillna(0)
 
         return matches, table

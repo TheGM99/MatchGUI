@@ -69,11 +69,11 @@ class Main(QDialog, MainMenu_ui.Ui_Dialog):
                 ["Drużyna", "Wygrane", "Remisy", "Przegrane", "Punkty"])
 
             for n, x in enumerate(temp2.iterrows()):
-                self.tableWidget.setItem(n, 0, QTableWidgetItem(x[0]))  # Nazwa Drużyny
-                self.tableWidget.setItem(n, 1, QTableWidgetItem(str(int(x[1][1]))))  # Ilość wygranych meczy
-                self.tableWidget.setItem(n, 2, QTableWidgetItem(str(int(x[1][3]))))  # Ilość zremisowanych meczy
-                self.tableWidget.setItem(n, 3, QTableWidgetItem(str(int(x[1][2]))))  # Ilość przegranych meczy
-                self.tableWidget.setItem(n, 4, QTableWidgetItem(str(int(x[1][0]))))  # Ilość zdobytych punktów
+                self.tableWidget.setItem(n, 0, QTableWidgetItem(x[1][0]))  # Nazwa Drużyny
+                self.tableWidget.setItem(n, 1, QTableWidgetItem(str(int(x[1][2]))))  # Ilość wygranych meczy
+                self.tableWidget.setItem(n, 2, QTableWidgetItem(str(int(x[1][4]))))  # Ilość zremisowanych meczy
+                self.tableWidget.setItem(n, 3, QTableWidgetItem(str(int(x[1][3]))))  # Ilość przegranych meczy
+                self.tableWidget.setItem(n, 4, QTableWidgetItem(str(int(x[1][1]))))  # Ilość zdobytych punktów
 
 
 class Match(QDialog, MatchWindow_ui.Ui_Dialog):
