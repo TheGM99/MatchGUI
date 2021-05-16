@@ -85,6 +85,17 @@ class Match(QDialog, MatchWindow_ui.Ui_Dialog):
             self.AInjurComboBox.addItem(str(x))
             self.HRedComboBox.addItem(str(x))
             self.HInjurComboBox.addItem(str(x))
+        teams = ["Liverpool", "Manchester City", "Manchester United", "Chelsea", "Leicester City",
+                 "Tottenham Hotspur",
+                 "Wolverhampton Wanderers", "Arsenal", "Sheffield United", "Burnley", "Southampton", "Everton",
+                 "Newcastle United", "Crystal Palace", "Brighton & Hove Albion", "West Ham United",
+                 "Aston Villa",
+                 "Leeds United", "West Bromwich Albion", "Fulham"]
+        teams.sort()
+
+        for t in teams:
+            self.HomeComboBox.addItem(t)
+            self.AwayComboBox.addItem(t)
 
     def generateMatch(self):
         # tu generowanie pojedynczego meczu
@@ -103,10 +114,46 @@ class Add(QDialog, AddWindow_ui.Ui_AddWindow):
         super().__init__(parent)
         self.setupUi(self)
         self.connectSignalsSlots()
+        self.conn = sqlite3.connect('premier_league.db')
+
+        sql_query = pd.read_sql_query(
+            "select * from Historical_matches", self.conn)
+        df = pd.DataFrame(sql_query, columns=['season'])
+        seasons = df.season.unique().tolist()
+
+        seasons.append('2020/21')
+        for x in seasons:
+            self.SeasonBox.addItem(x)
+
+        self.WinnerBox.addItem('A')
+        self.WinnerBox.addItem('H')
+        self.WinnerBox.addItem('D')
+
 
     def connectSignalsSlots(self):
         self.AddButton.clicked.connect(self.addMatch)
         self.CancelButton.clicked.connect(self.Cancel)
+        self.SeasonBox.activated.connect(self.fill_teams)
+
+    def fill_teams(self):
+        season = str(self.SeasonBox.currentText())
+        if season == "2020/21":
+            teams = ["Liverpool", "Manchester City", "Manchester United", "Chelsea", "Leicester City",
+                          "Tottenham Hotspur",
+                          "Wolverhampton Wanderers", "Arsenal", "Sheffield United", "Burnley", "Southampton", "Everton",
+                          "Newcastle United", "Crystal Palace", "Brighton & Hove Albion", "West Ham United",
+                          "Aston Villa",
+                          "Leeds United", "West Bromwich Albion", "Fulham"]
+            teams.sort()
+        else:
+            sql_query = pd.read_sql_query(
+                f"select home_team from Historical_matches where season = '{season}'", self.conn)
+            df = pd.DataFrame(sql_query, columns=['home_team'])
+            df = df['home_team'].drop_duplicates(keep='first')
+            teams = df.values.tolist()
+        for team in teams:
+            self.HomeTeamBox.addItem(team)
+            self.AwayTeamBox.addItem(team)
 
     def addMatch(self):
         # tu dodajemy mecz
