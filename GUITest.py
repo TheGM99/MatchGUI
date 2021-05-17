@@ -144,9 +144,10 @@ class Add(QDialog, AddWindow_ui.Ui_AddWindow):
         self.connectSignalsSlots()
         self.conn = sqlite3.connect('premier_league.db')
 
-        self.WinnerBox.addItem('Gość')
-        self.WinnerBox.addItem('Gospodarz')
-        self.WinnerBox.addItem('Remis')
+        for x in range(10):
+            self.HomeScoreBox.addItem(str(x))
+            self.AwayScorebox.addItem(str(x))
+            
         self.fill_teams()
 
     def connectSignalsSlots(self):
