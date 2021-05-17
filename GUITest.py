@@ -80,11 +80,20 @@ class Match(QDialog, MatchWindow_ui.Ui_Dialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
+        self.connectSignalsSlots()
+
+        self.PM = PredictionModel.PredictionModel()
+
         for x in range(10):
             self.ARedComboBox.addItem(str(x))
             self.AInjurComboBox.addItem(str(x))
             self.HRedComboBox.addItem(str(x))
             self.HInjurComboBox.addItem(str(x))
+
+        self.tableWidget.setColumnCount(3)
+        self.tableWidget.setRowCount(1)
+        self.tableWidget.setHorizontalHeaderLabels(["Gospodarz", "Gość", "Wynik"])
+
         teams = ["Liverpool", "Manchester City", "Manchester United", "Chelsea", "Leicester City",
                  "Tottenham Hotspur",
                  "Wolverhampton Wanderers", "Arsenal", "Sheffield United", "Burnley", "Southampton", "Everton",
@@ -97,8 +106,27 @@ class Match(QDialog, MatchWindow_ui.Ui_Dialog):
             self.HomeComboBox.addItem(t)
             self.AwayComboBox.addItem(t)
 
+    def connectSignalsSlots(self):
+        self.SimulateButton.clicked.connect(self.generateMatch)
+
+
     def generateMatch(self):
         # tu generowanie pojedynczego meczu
+
+        h = self.HomeComboBox.currentText()
+        a = self.AwayComboBox.currentText()
+
+        ar = self.ARedComboBox.currentText()
+        ai = self.AInjurComboBox.currentText()
+        hr = self.HRedComboBox.currentText()
+        hi = self.HInjurComboBox.currentText()
+
+        result = self.PM.predict_match(h, a, hr, hi, ar, ai, '2020/21')
+
+        self.tableWidget.setItem(0, 0, QTableWidgetItem(h))  # Nazwa Drużyny
+        self.tableWidget.setItem(0, 1, QTableWidgetItem(a))  # Ilość wygranych meczy
+        self.tableWidget.setItem(0, 2, QTableWidgetItem(result))  # Ilość zremisowanych meczy
+
         print()
 
     def saveMatch(self):
