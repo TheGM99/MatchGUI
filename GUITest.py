@@ -63,9 +63,14 @@ class Main(QDialog, MainMenu_ui.Ui_Main_Window):
             for n, x in enumerate(temp.iterrows()):
                 self.tableWidget.setItem(n, 0, QTableWidgetItem(x[1][0]))  # Nazwa Gospodarza
                 self.tableWidget.setItem(n, 1, QTableWidgetItem(x[1][1]))  # Nazwa Gościa
-                self.tableWidget.setItem(n, 2, QTableWidgetItem(x[1][2]))  # Ktora druzyna wygrala
+                if(x[1][2] == "D"):
+                    self.tableWidget.setItem(n, 2, QTableWidgetItem("Remis"))  # Ktora druzyna wygrala
+                elif(x[1][2] == "H"):
+                    self.tableWidget.setItem(n, 2, QTableWidgetItem("Gospodarz"))  # Ktora druzyna wygrala
+                elif(x[1][2] == "A"):
+                    self.tableWidget.setItem(n, 2, QTableWidgetItem("Gość"))  # Ktora druzyna wygrala
             self.tableWidget.resizeColumnsToContents()
-
+            self.tableWidget.horizontalHeader().setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
         else:
             self.tableWidget.setColumnCount(5)
             self.tableWidget.setRowCount(temp2.shape[0])
@@ -102,7 +107,6 @@ class Match(QDialog, MatchWindow_ui.Ui_Dialog):
         header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
         header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
         header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
-
         teams = ["Liverpool", "Manchester City", "Manchester United", "Chelsea", "Leicester City",
                  "Tottenham Hotspur",
                  "Wolverhampton Wanderers", "Arsenal", "Sheffield United", "Burnley", "Southampton", "Everton",
