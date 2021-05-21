@@ -130,6 +130,7 @@ class PredictionModel:
             df = df.append(sdf)
 
         df = self.prepare_data(df)
+        df = df.drop_duplicates(subset=['home_team', 'away_team'], keep='last')
         df = df.loc[df['season'] == season]
 
         if season != 2020:
@@ -163,6 +164,16 @@ class PredictionModel:
                     results[i] = "A"'''
 
         matches['winner'] = results
+        if season==2020:
+            sql_query = pd.read_sql_query(
+                "select * from Historical_matches where season = '2020/21'", self.conn)
+            df2 = pd.DataFrame(sql_query, columns=['home_team', 'away_team', 'winner' ])
+            print(df2)
+            print(matches)
+            matches = matches.append(df2)
+            print(matches)
+            matches = matches.drop_duplicates(subset=['home_team', 'away_team'], keep='last')
+            print(matches)
         matches['points'] = matches.apply(point_results, axis=1)
         matches['a_points'] = matches.apply(reverse_point_results, axis=1)
 
@@ -237,6 +248,7 @@ class PredictionModel:
         df = df.loc[df['home_team'] == home_team]
         df = df.loc[df['away_team'] == away_team]
         df = df.drop(columns=['season', 'points', 'winner', 'goal_difference', 'home_team', 'away_team'])
+
 
         if season == 2020:
             X = df.drop(columns=['result']).to_numpy()

@@ -183,7 +183,7 @@ class Add(QDialog, AddWindow_ui.Ui_AddWindow):
             winner = 'A'
         else:
             winner = 'H'
-        sql = ''' INSERT INTO Historical_matches('home_team', 'away_team', 'season', 'winner', 'goal_difference')
+        sql =''' INSERT OR REPLACE INTO Historical_matches('home_team', 'away_team', 'season', 'winner', 'goal_difference')
                       VALUES(?,?,?,?,?) '''
         cur = self.conn.cursor()
         cur.execute(sql, (home_team, away_team, '2020/21', winner, result))
