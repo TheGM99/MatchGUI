@@ -13,7 +13,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
-        Dialog.setObjectName("Dialog")
+        Dialog.setObjectName("")
         Dialog.resize(775, 500)
         Dialog.setAccessibleName("")
         self.tableWidget = QtWidgets.QTableWidget(Dialog)
@@ -73,7 +73,7 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
+        Dialog.setWindowTitle(_translate("Dialog", "System predykcji Premier League"))
         self.label_3.setText(_translate("Dialog", "Sezon:"))
         self.SeasonButton.setText(_translate("Dialog", "Symulacja wyników sezonu"))
         self.SaveButton.setText(_translate("Dialog", "Zapisz do bazy danych"))

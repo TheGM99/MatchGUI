@@ -70,7 +70,7 @@ class Ui_Dialog(object):
         self.SaveButton.setFont(font)
         self.SaveButton.setObjectName("SaveButton")
         self.tableWidget = QtWidgets.QTableWidget(Dialog)
-        self.tableWidget.setGeometry(QtCore.QRect(40, 220, 511, 81))
+        self.tableWidget.setGeometry(QtCore.QRect(40, 220, 511, 65))
         font = QtGui.QFont()
         font.setPointSize(7)
         self.tableWidget.setFont(font)
@@ -91,7 +91,7 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
+        Dialog.setWindowTitle(_translate("Dialog", "Symulacja Meczu"))
         self.label.setText(_translate("Dialog", "Gospodarz:"))
         self.label_2.setText(_translate("Dialog", "Gość:"))
         self.label_3.setText(_translate("Dialog", "Ilość graczy z czerwoną kartką:"))

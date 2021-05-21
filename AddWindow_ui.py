@@ -85,7 +85,7 @@ class Ui_AddWindow(object):
 
     def retranslateUi(self, AddWindow):
         _translate = QtCore.QCoreApplication.translate
-        AddWindow.setWindowTitle(_translate("AddWindow", "Dialog"))
+        AddWindow.setWindowTitle(_translate("AddWindow", "Dodawanie wyniku meczu"))
         self.AddButton.setText(_translate("AddWindow", "Dodaj mecz"))
         self.CancelButton.setText(_translate("AddWindow", "Powrót"))
         self.Label.setText(_translate("AddWindow", "Gość:"))

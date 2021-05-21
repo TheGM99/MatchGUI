@@ -1,10 +1,11 @@
 import sys
 import pandas as pd
 import sqlite3
-
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import (
     QApplication, QDialog, QMainWindow, QMessageBox,
-    QTableWidgetItem)
+    QTableWidgetItem, QHeaderView)
 
 from PyQt5.uic import loadUi
 
@@ -93,6 +94,10 @@ class Match(QDialog, MatchWindow_ui.Ui_Dialog):
         self.tableWidget.setColumnCount(3)
         self.tableWidget.setRowCount(1)
         self.tableWidget.setHorizontalHeaderLabels(["Gospodarz", "Gość", "Wynik"])
+        header = self.tableWidget.horizontalHeader()
+        header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+        header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
 
         teams = ["Liverpool", "Manchester City", "Manchester United", "Chelsea", "Leicester City",
                  "Tottenham Hotspur",
