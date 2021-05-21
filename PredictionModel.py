@@ -74,13 +74,16 @@ class PredictionModel:
         return network
 
     def prepare_data(self, df):
+        df['result'] = df.apply(goal_results, axis=1)
+        df['points'] = df.apply(point_results, axis=1)
+        df['a_points'] = df.apply(reverse_point_results, axis=1)
+
         for i in range(1, 5):
 
             df['next_season'] = df['season'] + i
             result_by_year = df[['next_season', 'home_team', 'result']].groupby(['next_season', 'home_team']).sum()
 
-            result_by_year['result'] -= \
-            df[['next_season', 'away_team', 'result']].groupby(['next_season', 'away_team']).sum()['result']
+            result_by_year['result'] -= df[['next_season', 'away_team', 'result']].groupby(['next_season', 'away_team']).sum()['result']
             result_by_year['result'] = result_by_year['result'] / 38
             result_by_year = result_by_year.rename({'next_season': 'season'})
             df = df.join(result_by_year, rsuffix=f"_{i}", on=['season', 'home_team']).fillna(0)
@@ -109,23 +112,11 @@ class PredictionModel:
         df = pd.DataFrame(sql_query, columns=['home_team', 'away_team', 'season', 'winner', 'goal_difference'])
         df['season'] = [x[:-3] for x in df['season']]
         df['season'] = df['season'].astype('int32')
-
-        df['result'] = df.apply(goal_results, axis=1)
-        df['points'] = df.apply(point_results, axis=1)
-        df['a_points'] = df.apply(reverse_point_results, axis=1)
+        df = df.loc[df['season'] > season - 5]
+        df = df.loc[df['season'] <= season]
 
         if season == 2020:
-            teams_2020 = ["Liverpool", "Manchester City", "Manchester United", "Chelsea", "Leicester City",
-                          "Tottenham Hotspur",
-                          "Wolverhampton Wanderers", "Arsenal", "Sheffield United", "Burnley", "Southampton", "Everton",
-                          "Newcastle United", "Crystal Palace", "Brighton & Hove Albion", "West Ham United",
-                          "Aston Villa",
-                          "Leeds United", "West Bromwich Albion", "Fulham"]
-            a = []
-            for team in teams_2020:
-                for t in teams_2020:
-                    if t != team:
-                        a.append([team, t, season, 0, 0])
+            a = self.matches_2020()
             sdf = pd.DataFrame(a, columns=['home_team', 'away_team', 'season', 'winner', 'goal_difference'])
             df = df.append(sdf)
 
@@ -164,7 +155,7 @@ class PredictionModel:
                     results[i] = "A"'''
 
         matches['winner'] = results
-        if season==2020:
+        if season == 2020:
             sql_query = pd.read_sql_query(
                 "select * from Historical_matches where season = '2020/21'", self.conn)
             df2 = pd.DataFrame(sql_query, columns=['home_team', 'away_team', 'winner' ])
@@ -224,22 +215,10 @@ class PredictionModel:
         df['season'] = df['season'].astype('int32')
         df = df.loc[df['season'] > season - 5]
         df = df.loc[df['season'] < season]
-        df['result'] = df.apply(goal_results, axis=1)
-        df['points'] = df.apply(point_results, axis=1)
-        df['a_points'] = df.apply(reverse_point_results, axis=1)
+
 
         if season == 2020:
-            teams_2020 = ["Liverpool", "Manchester City", "Manchester United", "Chelsea", "Leicester City",
-                          "Tottenham Hotspur",
-                          "Wolverhampton Wanderers", "Arsenal", "Sheffield United", "Burnley", "Southampton", "Everton",
-                          "Newcastle United", "Crystal Palace", "Brighton & Hove Albion", "West Ham United",
-                          "Aston Villa",
-                          "Leeds United", "West Bromwich Albion", "Fulham"]
-            a = []
-            for team in teams_2020:
-                for t in teams_2020:
-                    if t != team:
-                        a.append([team, t, season, 0, 0])
+            a = self.matches_2020()
             sdf = pd.DataFrame(a, columns=['home_team', 'away_team', 'season', 'winner', 'goal_difference'])
             df = df.append(sdf)
 
@@ -274,3 +253,16 @@ class PredictionModel:
             else:
                 return 'Remis'
 
+    def matches_2020(self):
+        a = []
+        teams_2020 = ["Liverpool", "Manchester City", "Manchester United", "Chelsea", "Leicester City",
+                      "Tottenham Hotspur",
+                      "Wolverhampton Wanderers", "Arsenal", "Sheffield United", "Burnley", "Southampton", "Everton",
+                      "Newcastle United", "Crystal Palace", "Brighton & Hove Albion", "West Ham United",
+                      "Aston Villa",
+                      "Leeds United", "West Bromwich Albion", "Fulham"]
+        for team in teams_2020:
+            for t in teams_2020:
+                if t != team:
+                    a.append([team, t, 2020, 0, 0])
+        return a
