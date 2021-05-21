@@ -245,7 +245,6 @@ class PredictionModel:
 
         predictions = self.model.predict(X)
         for i in range(predictions.shape[0]):
-            print(predictions[i])
             h = int(hi) + int(hr)
             a = int(ai) + int(ar)
             if a < 2:
@@ -255,8 +254,7 @@ class PredictionModel:
             predictions[i][0] -= predictions[i][0] * a  / 50
             predictions[i][1] -= predictions[i][1] * h / 50
             prediction = np.where(predictions[i] == np.max(predictions[i]))
-            print(predictions[i])
-            print()
+
             if prediction[0] == 0:
                 return 'Gość'
             elif prediction[0] == 1:

@@ -167,7 +167,23 @@ class Add(QDialog, AddWindow_ui.Ui_AddWindow):
             self.AwayTeamBox.addItem(team)
 
     def addMatch(self):
-        # tu dodajemy mecz
+        home_team = self.HomeTeamBox.currentText()
+        away_team = self.AwayTeamBox.currentText()
+        h = int(self.HomeScoreBox.currentText())
+        a = int(self.AwayScorebox.currentText())
+        result = abs(h - a)
+        if h == a:
+            winner = 'D'
+        elif a > h:
+            winner = 'A'
+        else:
+            winner = 'H'
+        sql = ''' INSERT INTO Historical_matches('home_team', 'away_team', 'season', 'winner', 'goal_difference')
+                      VALUES(?,?,?,?,?) '''
+        cur = self.conn.cursor()
+        cur.execute(sql, (home_team, away_team, '2020/21', winner, result))
+        self.conn.commit()
+
         self.close()
 
     def Cancel(self):
