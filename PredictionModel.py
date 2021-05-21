@@ -159,12 +159,16 @@ class PredictionModel:
             sql_query = pd.read_sql_query(
                 "select * from Historical_matches where season = '2020/21'", self.conn)
             df2 = pd.DataFrame(sql_query, columns=['home_team', 'away_team', 'winner' ])
-            print(df2)
-            print(matches)
+
             matches = matches.append(df2)
-            print(matches)
             matches = matches.drop_duplicates(subset=['home_team', 'away_team'], keep='last')
-            print(matches)
+
+
+        table = self.matches_to_table(matches)
+
+        return matches, table
+
+    def matches_to_table(self, matches):
         matches['points'] = matches.apply(point_results, axis=1)
         matches['a_points'] = matches.apply(reverse_point_results, axis=1)
 
@@ -182,7 +186,6 @@ class PredictionModel:
         t = t.rename(columns={'winner_x': 'wins'}).drop(columns=['winner_y'])
         table = table.merge(t, how='outer', on=['home_team']).fillna(0)
 
-
         t = matches[['home_team', 'winner']][matches['winner'] == 'A'].groupby('home_team').count()
         t2 = matches[['away_team', 'winner']][matches['winner'] == 'H'].groupby('away_team').count()
 
@@ -192,7 +195,6 @@ class PredictionModel:
         t['winner_x'] += t['winner_y']
         t = t.rename(columns={'winner_x': 'loses'}).drop(columns=['winner_y'])
         table = table.merge(t, how='outer', on=['home_team']).fillna(0)
-
 
         t = matches[['home_team', 'winner']][matches['winner'] == 'D'].groupby('home_team').count()
         t2 = matches[['away_team', 'winner']][matches['winner'] == 'D'].groupby('away_team').count()
@@ -204,7 +206,7 @@ class PredictionModel:
         t = t.rename(columns={'winner_x': 'draws'}).drop(columns=['winner_y'])
         table = table.merge(t, how='outer', on=['home_team']).fillna(0)
 
-        return matches, table
+        return table
 
     def predict_match(self, home_team, away_team, hr, hi, ar, ai, season):
         season = int(season[:-3])
@@ -236,22 +238,30 @@ class PredictionModel:
 
         predictions = self.model.predict(X)
         for i in range(predictions.shape[0]):
+            print(predictions)
             h = int(hi) + int(hr)
             a = int(ai) + int(ar)
             if a < 2:
                 a = 0
             if h < 2:
                 h = 0
-            predictions[i][0] -= predictions[i][0] * a  / 50
-            predictions[i][1] -= predictions[i][1] * h / 50
+            predictions[i][0] -= predictions[i][0] * a*a  / 120
+            predictions[i][1] -= predictions[i][1] * h*h / 120
+            predictions[i][1] += predictions[i][0] * a * a / 120
+            predictions[i][0] += predictions[i][1] * h * h / 120
+            predictions[i][2] -= predictions[i][2] * (a - h)* (a - h)  / 120
+
+            print(predictions)
+
             prediction = np.where(predictions[i] == np.max(predictions[i]))
 
+
             if prediction[0] == 0:
-                return 'Gość'
+                return 'A'
             elif prediction[0] == 1:
-                return 'Gospodarz'
+                return 'H'
             else:
-                return 'Remis'
+                return 'D'
 
     def matches_2020(self):
         a = []
