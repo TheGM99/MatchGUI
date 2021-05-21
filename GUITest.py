@@ -24,13 +24,16 @@ class Main(QDialog, MainMenu_ui.Ui_Main_Window):
         self.connectSignalsSlots()
         self.conn = sqlite3.connect('premier_league.db')
         self.PM = PredictionModel.PredictionModel()
+        self.last_matches = None
+        self.last_predicted_season = None
 
         sql_query = pd.read_sql_query(
             "select * from Historical_matches", self.conn)
         df = pd.DataFrame(sql_query, columns=['season'])
         seasons = df.season.unique().tolist()
 
-        seasons.append('2020/21')
+        if '2020/21' not in seasons:
+            seasons.append('2020/21')
         seasons.remove('1995/96')
         seasons.remove('1996/97')
         seasons.remove('1997/98')
@@ -52,10 +55,21 @@ class Main(QDialog, MainMenu_ui.Ui_Main_Window):
     def saveToDB(self):
         # Tu zapisywanie wygenerowanych wyników do bd
         print()
+        if self.last_matches is None:
+            pass
+        else:
+            for match in self.last_matches.iterrows():
+                sql = ''' INSERT OR REPLACE INTO Predicted_matches('home_team', 'away_team', 'season', 'winner')
+                                      VALUES(?,?,?,?) '''
+                cur = self.conn.cursor()
+                cur.execute(sql, (match[1][0], match[1][1], self.last_predicted_season, match[1][2]))
+            self.conn.commit()
 
     def generateSeason(self):
         # tu wygenerowanie wynikow sezonu
         temp, temp2 = self.PM.predict_season(int(self.SeasonComboBox.currentText()[:-3]))
+        self.last_predicted_season = self.SeasonComboBox.currentText()[:-3]
+        self.last_matches = temp
         if (self.viewButton.isChecked()):
             self.tableWidget.setColumnCount(3)
             self.tableWidget.setRowCount(temp.shape[0])
