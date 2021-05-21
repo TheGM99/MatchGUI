@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Symulacja Meczu</string>
   </property>
   <widget class="QComboBox" name="HomeComboBox">
    <property name="geometry">
@@ -37,9 +37,9 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>20</y>
+     <y>10</y>
      <width>111</width>
-     <height>20</height>
+     <height>41</height>
     </rect>
    </property>
    <property name="font">

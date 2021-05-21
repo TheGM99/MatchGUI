@@ -2,7 +2,8 @@ import sys
 import pandas as pd
 import sqlite3
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QSize
+import qdarkstyle as ds
+
 from PyQt5.QtWidgets import (
     QApplication, QDialog, QMainWindow, QMessageBox,
     QTableWidgetItem, QHeaderView)
@@ -15,9 +16,10 @@ import AddWindow_ui
 import PredictionModel
 
 
-class Main(QDialog, MainMenu_ui.Ui_Dialog):
+class Main(QDialog, MainMenu_ui.Ui_Main_Window):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.setStyleSheet(ds.load_stylesheet())
         self.setupUi(self)
         self.connectSignalsSlots()
         self.conn = sqlite3.connect('premier_league.db')
@@ -58,11 +60,12 @@ class Main(QDialog, MainMenu_ui.Ui_Dialog):
             self.tableWidget.setColumnCount(3)
             self.tableWidget.setRowCount(temp.shape[0])
             self.tableWidget.setHorizontalHeaderLabels(["Gospodarz", "Gość", "Wynik"])
-
             for n, x in enumerate(temp.iterrows()):
                 self.tableWidget.setItem(n, 0, QTableWidgetItem(x[1][0]))  # Nazwa Gospodarza
                 self.tableWidget.setItem(n, 1, QTableWidgetItem(x[1][1]))  # Nazwa Gościa
                 self.tableWidget.setItem(n, 2, QTableWidgetItem(x[1][2]))  # Ktora druzyna wygrala
+            self.tableWidget.resizeColumnsToContents()
+
         else:
             self.tableWidget.setColumnCount(5)
             self.tableWidget.setRowCount(temp2.shape[0])
@@ -75,12 +78,13 @@ class Main(QDialog, MainMenu_ui.Ui_Dialog):
                 self.tableWidget.setItem(n, 2, QTableWidgetItem(str(int(x[1][4]))))  # Ilość zremisowanych meczy
                 self.tableWidget.setItem(n, 3, QTableWidgetItem(str(int(x[1][3]))))  # Ilość przegranych meczy
                 self.tableWidget.setItem(n, 4, QTableWidgetItem(str(int(x[1][1]))))  # Ilość zdobytych punktów
-
+            self.tableWidget.resizeColumnsToContents()
 
 class Match(QDialog, MatchWindow_ui.Ui_Dialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
+        self.setStyleSheet(ds.load_stylesheet())
         self.connectSignalsSlots()
 
         self.PM = PredictionModel.PredictionModel()
@@ -146,6 +150,7 @@ class Add(QDialog, AddWindow_ui.Ui_AddWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
+        self.setStyleSheet(ds.load_stylesheet())
         self.connectSignalsSlots()
         self.conn = sqlite3.connect('premier_league.db')
 

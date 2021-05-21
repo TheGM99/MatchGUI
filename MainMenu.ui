@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Dialog</class>
- <widget class="QDialog" name="Dialog">
+ <class>Main_Window</class>
+ <widget class="QDialog" name="Main_Window">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>775</width>
-    <height>500</height>
+    <width>889</width>
+    <height>510</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>System predykcji Premier League</string>
   </property>
   <property name="accessibleName">
    <string/>
@@ -21,7 +21,7 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>441</width>
+     <width>551</width>
      <height>481</height>
     </rect>
    </property>
@@ -29,7 +29,7 @@
   <widget class="QComboBox" name="SeasonComboBox">
    <property name="geometry">
     <rect>
-     <x>540</x>
+     <x>640</x>
      <y>150</y>
      <width>211</width>
      <height>22</height>
@@ -42,7 +42,7 @@
   <widget class="QLabel" name="label_3">
    <property name="geometry">
     <rect>
-     <x>480</x>
+     <x>580</x>
      <y>150</y>
      <width>56</width>
      <height>16</height>
@@ -60,29 +60,32 @@
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>480</x>
+     <x>580</x>
      <y>180</y>
-     <width>271</width>
-     <height>161</height>
+     <width>291</width>
+     <height>221</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QPushButton" name="SeasonButton">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
       <property name="text">
        <string>Symulacja wyników sezonu</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="SaveButton">
-      <property name="text">
-       <string>Zapisz do bazy danych</string>
-      </property>
-     </widget>
-    </item>
-    <item>
      <widget class="QPushButton" name="MatchButton">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
       <property name="text">
        <string>Symulacja wyników meczu</string>
       </property>
@@ -90,12 +93,59 @@
     </item>
     <item>
      <widget class="QPushButton" name="AddButton">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
       <property name="text">
        <string>Dodaj wynik meczu</string>
       </property>
      </widget>
     </item>
+    <item>
+     <widget class="QPushButton" name="SaveButton">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Zapisz do bazy danych</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="DisplayButton">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Wyświetl przewidziane mecze</string>
+      </property>
+     </widget>
+    </item>
    </layout>
+  </widget>
+  <widget class="QRadioButton" name="viewButton">
+   <property name="geometry">
+    <rect>
+     <x>580</x>
+     <y>110</y>
+     <width>241</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>9</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>Wyświetl wyniki jako listę meczy</string>
+   </property>
   </widget>
  </widget>
  <resources/>
