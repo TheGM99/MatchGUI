@@ -195,6 +195,14 @@ class Match(QDialog, MatchWindow_ui.Ui_Dialog):
         h = self.HomeComboBox.currentText()
         a = self.AwayComboBox.currentText()
 
+        if h == a:
+            ms = QtWidgets.QMessageBox()
+            ms.setText("Wybrano dwa razy tą samą drużynę")
+            ms.setWindowTitle("Błąd")
+            ms.setIcon(QMessageBox.Critical)
+            ms.exec()
+            return
+
         ar = self.ARedComboBox.currentText()
         ai = self.AInjurComboBox.currentText()
         hr = self.HRedComboBox.currentText()
@@ -266,6 +274,13 @@ class Add(QDialog, AddWindow_ui.Ui_AddWindow):
     def addMatch(self):
         home_team = self.HomeTeamBox.currentText()
         away_team = self.AwayTeamBox.currentText()
+        if home_team == away_team:
+            ms = QtWidgets.QMessageBox()
+            ms.setText("Wybrano dwa razy tą samą drużynę")
+            ms.setWindowTitle("Błąd")
+            ms.setIcon(QMessageBox.Critical)
+            ms.exec()
+            return
         h = int(self.HomeScoreBox.currentText())
         a = int(self.AwayScorebox.currentText())
         result = abs(h - a)
